@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FileReader Example</title>
+    <meta  charset="utf-8"/>
+    <script>
+        document.addEventListener('DOMContentLoaded',function() {
+            var fileInput       = document.getElementById("fileInput");
+            var textArea        = document.getElementById("fileEditor");
+            var saveFileButton  = document.getElementById("saveFileButton");
+            var downloadAnchor  = document.getElementById("downloadAnchor");
+
+            function base64EncodeUnicode(str) {
+                // First we escape the string using encodeURIComponent to get the UTF-8 encoding of the characters, 
+                // then we convert the percent encodings into raw bytes, and finally feed it to btoa() function.
+                utf8Bytes = encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
+                        return String.fromCharCode('0x' + p1);
+                });
+
+                return btoa(utf8Bytes);
+            }
+
+            function handleInputFileChange(event) {
+                //if we didnd't already have the "fileInput" var in scope, we could use "event.target" to get it
+                if(fileInput.files.length>=1) {
+                    //In this example, I'm putting the selected file's name in the title. You don't need to do this
+                    document.title = fileInput.files[0].name;
+                    downloadAnchor.setAttribute("download","edited_"+fileInput.files[0].name);
+                }
+                else {
+                    document.title = "FileReader Example";
+                    downloadAnchor.setAttribute("download","edited_file.txt");
+                }
+                var fr = new FileReader();
+                fr.readAsText(fileInput.files[0]);
+                fr.onload = function (event) {
+                    //Both "event.target.result" and "fr.result" contain the file's contents (because "event.target" is === "fr")
+
+                    textArea.value = event.target.result;
+                    // OR
+                    //textArea.value = fr.result;
+                }
+            }
+            //The next is the fucntion returns a special kind of URL, a Data URL.
+            //These kind of URLs don't point to a file, they ARE the data.
+            //Read more here: https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs
+            function getDownloadableTextAreaContents() {
+                return "data:text/plain,"+encodeURIComponent(textArea.value);
+            }
+            function onDownloadClick(event) {
+                //https://stackoverflow.com/a/247261/6302540
+                //var urlObject = "data:text/plain;base64,"+btoa(unescape(encodeURIComponent(textArea.value)));
+                var urlObject = getDownloadableTextAreaContents();
+                downloadAnchor.setAttribute("href",urlObject);
+                downloadAnchor.click();
+            }
+
+            fileInput.addEventListener("change",handleInputFileChange);
+            saveFileButton.addEventListener("click",onDownloadClick);
+        },false);
+    </script>
+</head>
+<body>
+    <h1>File Reader Example:</h1>
+    <input id="fileInput" type="file" accept=".txt"/>
+    <textarea name="File Editor" id="fileEditor" placeholder="Your file's contents will show up here once you select the file!"></textarea>
+    <button id="saveFileButton">Save File</button>
+    <!--The next <a> tag is just a trick to make the browser download a file. It isn't displayed (style="display: none;")-->
+    <a id="downloadAnchor" download="edited_file.txt" href="data:text/plain," style="display: none;"></a>
+</body>
