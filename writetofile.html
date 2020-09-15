@@ -12,9 +12,14 @@
 
 <script type="text/babel">
 class MyApp extends React.Component {
+
   downloadTxtFile = () => {
+      	const name = document.getElementById('txtName');
+        const age = document.getElementById('txtAge');
+		const input = document.getElementById('myInput');
+        const data = '\r Name: ' + myInput.value + ' \r\n ' + 'Age: ' + txtName.value + ' \r\n ' + 'Email: ' + txtAge.value;
     const element = document.createElement("a");
-    const file = new Blob([document.getElementById('myInput').value], {type: 'text/plain'});
+    const file = new Blob([data], {type: 'text/plain'});
     element.href = URL.createObjectURL(file);
     element.download = "myFile.txt";
     document.body.appendChild(element); // Required for this to work in FireFox
@@ -25,6 +30,12 @@ class MyApp extends React.Component {
     return (
       <div>
         <input id="myInput" />
+		<div>
+            <input type="text" id="txtName" placeholder="Enter your name" />
+        </div>
+		<div>
+            <input type="text" id="txtAge" placeholder="Enter your age" />
+        </div>
         <button onClick={this.downloadTxtFile}>Download txt</button>
       </div>
     );
