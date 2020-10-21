@@ -13,7 +13,6 @@
 
 <script type="text/babel">
 const API = 'https://cors-anywhere.herokuapp.com/https://registry.hub.docker.com/v1/repositories/';
-const dockerImage = '';
 class MyApp extends React.Component {
   constructor(props) {
     super(props);
@@ -22,7 +21,6 @@ class MyApp extends React.Component {
       records: [],
       isLoading: false,
       error: null,
-	  dockerImage: ''
     };
   }
   downloadTxtFile = () => {
@@ -38,11 +36,11 @@ class MyApp extends React.Component {
     element.click();
   }
 
-  async componentDidMount() {
+  async componentDidMount(abc) {
     this.setState({ isLoading: true });
 
     try {
-      const result = await axios.get(API + dockerImage,{'mode':'no-cors'});
+      const result = await axios.get(API + abc,{'mode':'no-cors'});
 
       this.setState({
         records: result.data,
@@ -56,9 +54,9 @@ class MyApp extends React.Component {
     }
   }
 	updateInputValue(evt){
-		this.setState({
-			dockerImage: evt.target.value
-					 });
+		const dockerImage = dockerImageName.value;
+		console.log(dockerImage);
+		this.componentDidMount(dockerImage)
 						}	
   render() {
 				const { records, isLoading, error } = this.state;
@@ -66,24 +64,27 @@ class MyApp extends React.Component {
 						return <p>Loading ...</p>;
 								  }								  
 				return (
-				<div>
-					<input value={this.state.dockerImage} onChange={evt => this.updateInputValue(evt)} />
-					<div>
-						<input type="text" id="txtName" placeholder="Enter your age" />
-					</div>
-					<div>
-						{
-							records.map(hit =>
-							<li key={hit.objectID}>
-							<a>{hit.name}</a>
-							</li>)
-						}
-					</div>
-					<div>
-						<input type="text" id="txtAge" placeholder="Enter your email" />
-					</div>
-					<button onClick={this.downloadTxtFile}>Download txt</button>
-				</div>
+						<div>
+								<input type="text" id="dockerImageName" onChange={evt => this.updateInputValue(evt)} />
+							<div>
+								<input type="text" id="myInput" placeholder="Enter Input" />
+							</div>
+							<div>
+								<input type="text" id="txtName" placeholder="Enter your age" />
+							</div>
+							<div>
+							{
+								records.map(hit =>
+								<li key={hit.objectID}>
+								<a>{hit.name}</a>
+								</li>)
+							}
+							</div>
+							<div>
+							<input type="text" id="txtAge" placeholder="Enter your email" />
+							</div>
+							<button onClick={this.downloadTxtFile}>Download txt</button>
+						</div>	
 						);
 		}
 }
