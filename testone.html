@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react-dom.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<body>
+
+<div id="myApp"></div>
+
+<script type="text/babel">
+const API = 'https://cors-anywhere.herokuapp.com/https://registry.hub.docker.com/v1/repositories/ubuntu/tags';
+const DEFAULT_QUERY = '';
+class MyApp extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      records: [],
+      isLoading: false,
+      error: null,
+    };
+  }
+  downloadTxtFile = () => {
+      	const name = document.getElementById('txtName');
+        const age = document.getElementById('txtAge');
+		const input = document.getElementById('myInput');
+        const data = '\r Name: ' + myInput.value + ' \r\n ' + 'Age: ' + txtName.value + ' \r\n ' + 'Email: ' + txtAge.value;
+    const element = document.createElement("a");
+    const file = new Blob([data], {type: 'text/plain'});
+    element.href = URL.createObjectURL(file);
+    element.download = "myFile.txt";
+    document.body.appendChild(element); // Required for this to work in FireFox
+    element.click();
+  }
+
+  async componentDidMount() {
+    this.setState({ isLoading: true });
+
+    try {
+      const result = await axios.get(API,{'mode':'no-cors'});
+
+      this.setState({
+        records: result.data,
+        isLoading: false
+      });
+    } catch (error) {
+      this.setState({
+        error,
+        isLoading: false
+      });
+    }
+  }
+
+  render() {
+  const { records, isLoading, error } = this.state;	
+      if (error) {
+      return <p>{error.message}</p>;
+    }
+
+    if (isLoading) {
+      return <p>Loading ...</p>;
+    }
+    return (
+      <div>
+        <input id="myInput" />
+		<div>
+            <input type="text" id="txtName" placeholder="Enter your name" />
+        </div>
+        <div>
+        {records.map(hit =>
+          <li key={hit.objectID}>
+            <a>{hit.name}</a>
+          </li>
+        )}
+        </div>
+		<div>
+            <input type="text" id="txtAge" placeholder="Enter your age" />
+        </div>
+        <button onClick={this.downloadTxtFile}>Download txt</button>
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(<MyApp />, document.getElementById("myApp"));
+</script>
+
+</body>
+</html>
