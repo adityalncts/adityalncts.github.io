@@ -12,8 +12,8 @@
 <div id="myApp"></div>
 
 <script type="text/babel">
-const API = 'https://cors-anywhere.herokuapp.com/https://registry.hub.docker.com/v1/repositories/ubuntu/tags';
-const DEFAULT_QUERY = '';
+const API = 'https://cors-anywhere.herokuapp.com/https://registry.hub.docker.com/v1/repositories/';
+const dockerImage = '';
 class MyApp extends React.Component {
   constructor(props) {
     super(props);
@@ -22,6 +22,7 @@ class MyApp extends React.Component {
       records: [],
       isLoading: false,
       error: null,
+	  dockerImage: ''
     };
   }
   downloadTxtFile = () => {
@@ -41,7 +42,7 @@ class MyApp extends React.Component {
     this.setState({ isLoading: true });
 
     try {
-      const result = await axios.get(API,{'mode':'no-cors'});
+      const result = await axios.get(API + dockerImage,{'mode':'no-cors'});
 
       this.setState({
         records: result.data,
@@ -54,40 +55,40 @@ class MyApp extends React.Component {
       });
     }
   }
-
+	updateInputValue(evt){
+		this.setState({
+			dockerImage: evt.target.value
+					 });
+						}	
   render() {
-  const { records, isLoading, error } = this.state;	
-      if (error) {
-      return <p>{error.message}</p>;
-    }
-
-    if (isLoading) {
-      return <p>Loading ...</p>;
-    }
-    return (
-      <div>
-        <input id="myInput" />
-		<div>
-            <input type="text" id="txtName" placeholder="Enter your name" />
-        </div>
-        <div>
-        {records.map(hit =>
-          <li key={hit.objectID}>
-            <a>{hit.name}</a>
-          </li>
-        )}
-        </div>
-		<div>
-            <input type="text" id="txtAge" placeholder="Enter your age" />
-        </div>
-        <button onClick={this.downloadTxtFile}>Download txt</button>
-      </div>
-    );
-  }
+				const { records, isLoading, error } = this.state;
+					if (isLoading){
+						return <p>Loading ...</p>;
+								  }								  
+				return (
+				<div>
+					<input value={this.state.dockerImage} onChange={evt => this.updateInputValue(evt)} />
+					<div>
+						<input type="text" id="txtName" placeholder="Enter your age" />
+					</div>
+					<div>
+						{
+							records.map(hit =>
+							<li key={hit.objectID}>
+							<a>{hit.name}</a>
+							</li>)
+						}
+					</div>
+					<div>
+						<input type="text" id="txtAge" placeholder="Enter your email" />
+					</div>
+					<button onClick={this.downloadTxtFile}>Download txt</button>
+				</div>
+						);
+		}
 }
 
 ReactDOM.render(<MyApp />, document.getElementById("myApp"));
 </script>
-
 </body>
 </html>
