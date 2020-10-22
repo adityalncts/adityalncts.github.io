@@ -27,7 +27,7 @@ class MyApp extends React.Component {
       	const name = document.getElementById('txtName');
         const age = document.getElementById('txtAge');
 		const input = document.getElementById('myInput');
-        const data = '\r Name: ' + myInput.value + ' \r\n ' + 'Age: ' + txtName.value + ' \r\n ' + 'Email: ' + txtAge.value;
+        const data = 'FROM ' + dockerImageName.value + '\n' + 'CMD ' + myInput.value + '\n' + 'RUN ' + txtName.value;
     const element = document.createElement("a");
     const file = new Blob([data], {type: 'text/plain'});
     element.href = URL.createObjectURL(file);
@@ -40,7 +40,7 @@ class MyApp extends React.Component {
     this.setState({ isLoading: true });
 
     try {
-      const result = await axios.get(API + abc,{'mode':'no-cors'});
+      const result = await axios.get(API + abc + '/tags',{'mode':'no-cors'});
 
       this.setState({
         records: result.data,
@@ -59,18 +59,15 @@ class MyApp extends React.Component {
 		this.componentDidMount(dockerImage)
 						}	
   render() {
-				const { records, isLoading, error } = this.state;
-					if (isLoading){
-						return <p>Loading ...</p>;
-								  }								  
+				const { records, isLoading, error } = this.state;							  
 				return (
 						<div>
-								<input type="text" id="dockerImageName" onChange={evt => this.updateInputValue(evt)} />
+								<input type="text" id="dockerImageName" onChange={evt => this.updateInputValue(evt)} placeholder="Enter docker Image" />
 							<div>
-								<input type="text" id="myInput" placeholder="Enter Input" />
+								<input type="text" id="myInput" placeholder="Enter Input directories" />
 							</div>
 							<div>
-								<input type="text" id="txtName" placeholder="Enter your age" />
+								<input type="text" id="txtName" placeholder="Enter your path of entrypoint.sh" />
 							</div>
 							<div>
 							{
@@ -79,9 +76,6 @@ class MyApp extends React.Component {
 								<a>{hit.name}</a>
 								</li>)
 							}
-							</div>
-							<div>
-							<input type="text" id="txtAge" placeholder="Enter your email" />
 							</div>
 							<button onClick={this.downloadTxtFile}>Download txt</button>
 						</div>	
